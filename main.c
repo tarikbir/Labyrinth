@@ -112,6 +112,7 @@ int main()
 <<<<<<< HEAD
     int deneme123;
 =======
+    int besyuzbin=500;
 >>>>>>> e6da164df90f279b0a4efa9ee987e5bc15e2b4af
     /* TODO: SCANF X MALLOC DIZI */
     generateRandomMap(map);
