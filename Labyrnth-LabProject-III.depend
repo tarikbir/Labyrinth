@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1510746608 source:c:\users\tarik_000\documents\github\labyrnth-labproject-iii\main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<math.h>
+
