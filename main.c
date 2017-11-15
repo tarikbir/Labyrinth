@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 /* GLOBAL DEFINES */
 #define MAX 40
 #define X 20
@@ -35,15 +36,15 @@ void drawMap(char map[X][X])
         for (int j=0;j<X;j++)
         {
             if (map[i][j] == 1) //Labirent yolu
-                printf("[ ]");
-            else if (map[i][j] == 0) //Labirent duvari
+                printf("[+]");
+            else if (map[i][j] == 0) //Labirent duvarý
                 printf("   ");
-            else if (map[i][j] == 2) //Labirent baslangic noktasi
+            else if (map[i][j] == 2) //Labirent baþlangýç noktasý
                 printf("<o>");
-            else if (map[i][j] == 3) //Labirent bitis noktasi
+            else if (map[i][j] == 3) //Labirent bitiþ noktasý
                 printf("/!\\");
         }
-        printf("\n");
+        printf("|\n");
     }
     for (int i=0;i<3*X;i++) {printf("-");}
     printf("---");
@@ -52,6 +53,8 @@ void drawMap(char map[X][X])
 void generateRandomMap(char map[X][X])
 {
     /**Generates a random map between 0 and 1*/
+    short int chance = 33; // Normalde %50 ihtimalle dizilen sayýlarý yine 2 elemana yakýnsa %50 ihtimalle deðilse daha düþük bir ihtimalle yeniden dizecek yumuþatma algoritmasýnýn þans deðeri.
+    /* FULL RANDOM */
     for (int i=0;i<X;i++)
     {
         for (int j=0;j<X;j++)
@@ -59,6 +62,27 @@ void generateRandomMap(char map[X][X])
             map[i][j] = rand()%2;
         }
     }
+    /* SMOOTHING THE FIRST FULL RANDOM */
+    for (int i=0;i<X;i++)
+    {
+        for (int j=0;j<X;j++)
+        {
+            if (i-1>=0 && j-1>=0 && i+1<X && j+1<X)
+            {
+                char amount_of_adjacent_available_tiles = 0;
+                if(map[i-1][j]) amount_of_adjacent_available_tiles++; //Üstte
+                if(map[i][j-1]) amount_of_adjacent_available_tiles++; //Solda
+                if(map[i][j+1]) amount_of_adjacent_available_tiles++; //Saðda
+                if(map[i+1][j]) amount_of_adjacent_available_tiles++; //Altta
+                char inner_chance = 2-abs(2-amount_of_adjacent_available_tiles); // 2-|2-x| kýrýlmalý lineer fonksiyon grafiði denklemi ile 2'de maksimum hesaplatýyor
+                if (chance*inner_chance > (rand()%101))
+                    map[i][j] = 1;
+                else
+                    map[i][j] = 0;
+            }
+        }
+    }
+
 }
 
 int getNumber(int max)
@@ -90,7 +114,7 @@ int writeMapBySide(int side, int count, char map[X][X], int max, char info, int 
     else if (side == 4)
         p = &map[count-1][0];
     else
-        printf("ERROR: Wrong side or info in writeMapBySide!");
+        printf("\nERROR: Wrong side or info in writeMapBySide!");
     if (doCheck)
     {
         if (check == *p)
@@ -108,8 +132,7 @@ int main()
 {
     /* INITIALIZATION */
     srand(time(NULL));
-    char map[X][X];
-    int deneme123;
+    char map[X][X] = {0};
     /* TODO: SCANF X MALLOC DIZI */
     generateRandomMap(map);
     drawMap(map);
@@ -122,7 +145,7 @@ int main()
         int point = getNumber(X);
         int check = writeMapBySide(side, point, map, X, 2, 1, 1);
         if (check) break;
-        printf("ERROR: Wrong input! That point is not a valid target for an entrance!");
+        printf("\nERROR: Wrong input! That point is not a valid target for an entrance!");
     }while(1);
     system("cls");
     drawMap(map);
@@ -134,7 +157,7 @@ int main()
         int point = getNumber(X);
         int check = writeMapBySide(side, point, map, X, 3, 1, 1);
         if (check) break;
-        printf("ERROR: Wrong input! That point is not a valid target for an exit!");
+        printf("\nERROR: Wrong input! That point is not a valid target for an exit!");
     }while(1);
     system("cls");
     drawMap(map);
