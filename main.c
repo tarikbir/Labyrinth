@@ -133,7 +133,6 @@ int main()
     /* INITIALIZATION */
     srand(time(NULL));
     char map[X][X] = {0};
-    char naber[] = "NABER KANKA NASILSIN";
     /* TODO: SCANF X MALLOC DIZI */
     generateRandomMap(map);
     drawMap(map);
