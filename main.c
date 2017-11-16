@@ -37,11 +37,11 @@ void drawMap(char map[X][X])
         {
             if (map[i][j] == 1) //Labirent yolu
                 printf("[+]");
-            else if (map[i][j] == 0) //Labirent duvarı
+            else if (map[i][j] == 0) //Labirent duvarÃ½
                 printf("   ");
-            else if (map[i][j] == 2) //Labirent başlangıç noktası
+            else if (map[i][j] == 2) //Labirent baÃ¾langÃ½Ã§ noktasÃ½
                 printf("<o>");
-            else if (map[i][j] == 3) //Labirent bitiş noktası
+            else if (map[i][j] == 3) //Labirent bitiÃ¾ noktasÃ½
                 printf("/!\\");
         }
         printf("|\n");
@@ -53,7 +53,7 @@ void drawMap(char map[X][X])
 void generateRandomMap(char map[X][X])
 {
     /**Generates a random map between 0 and 1*/
-    short int chance = 33; // Normalde %50 ihtimalle dizilen sayıları yine 2 elemana yakınsa %50 ihtimalle değilse daha düşük bir ihtimalle yeniden dizecek yumuşatma algoritmasının şans değeri.
+    short int chance = 50; // Normalde %50 ihtimalle dizilen sayÃ½larÃ½ yine 2 elemana yakÃ½nsa %50 ihtimalle deÃ°ilse daha dÃ¼Ã¾Ã¼k bir ihtimalle yeniden dizecek yumuÃ¾atma algoritmasÃ½nÃ½n Ã¾ans deÃ°eri.
     /* FULL RANDOM */
     for (int i=0;i<X;i++)
     {
@@ -70,11 +70,11 @@ void generateRandomMap(char map[X][X])
             if (i-1>=0 && j-1>=0 && i+1<X && j+1<X)
             {
                 char amount_of_adjacent_available_tiles = 0;
-                if(map[i-1][j]) amount_of_adjacent_available_tiles++; //Üstte
+                if(map[i-1][j]) amount_of_adjacent_available_tiles++; //Ãœstte
                 if(map[i][j-1]) amount_of_adjacent_available_tiles++; //Solda
-                if(map[i][j+1]) amount_of_adjacent_available_tiles++; //Sağda
+                if(map[i][j+1]) amount_of_adjacent_available_tiles++; //SaÃ°da
                 if(map[i+1][j]) amount_of_adjacent_available_tiles++; //Altta
-                char inner_chance = 2-abs(2-amount_of_adjacent_available_tiles); // 2-|2-x| kırılmalı lineer fonksiyon grafiği denklemi ile 2'de maksimum hesaplatıyor
+                char inner_chance = 2-abs(2-amount_of_adjacent_available_tiles); // 2-|2-x| kÃ½rÃ½lmalÃ½ lineer fonksiyon grafiÃ°i denklemi ile 2'de maksimum hesaplatÃ½yor
                 if (chance*inner_chance > (rand()%101))
                     map[i][j] = 1;
                 else
