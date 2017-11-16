@@ -133,6 +133,7 @@ int main()
     /* INITIALIZATION */
     srand(time(NULL));
     char map[X][X] = {0};
+    int a = 3;
     /* TODO: SCANF X MALLOC DIZI */
     generateRandomMap(map);
     drawMap(map);
