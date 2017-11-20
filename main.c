@@ -4,56 +4,68 @@
 #include <math.h>
 /* GLOBAL DEFINES */
 #define MAX 40
-#define X 20
+#define X 50
 
-char moves = {0 , 1 , 2 , 3};
+char moves[] = {0 , 1 , 2 , 3};
 /*  0 = Up
     1 = Right
     2 = Down
     3 = Left */
 
 struct move{
-    char nextMove;
-    struct move *prev;
+    char x;
+    char y;
+    char remaining;
     struct move *next;
 };
 
 struct stack{
     struct move val;
+    struct stack *prev;
     struct stack *next;
 };
 
 void drawMap(char map[X][X])
 {
     /**Draws the map onto the cmd screen*/
-    for (int i=0;i<3*X;i++) {printf("-");}
-    printf("---\n");
-    for (int i=0;i<=X;i++) {printf("%2d ",i);}
-    printf("\n");
+    printf("┌");
+    for (int i=0;i<=3*X+2;i++) {printf("─");}
+    printf("┐\n│");
+    for (int i=0;i<=X;i++) {printf("%02d ",i);}
+    printf("│\n");
     for (int i=0;i<X;i++)
     {
-        printf("%2d ",i+1);
+        printf("│%02d ",i+1);
         for (int j=0;j<X;j++)
         {
-            if (map[i][j] == 1) //Labirent yolu
-                printf("[+]");
-            else if (map[i][j] == 0) //Labirent duvarý
+            if (map[i][j] == 0) //Walls
                 printf("   ");
-            else if (map[i][j] == 2) //Labirent baþlangýç noktasý
-                printf("<o>");
-            else if (map[i][j] == 3) //Labirent bitiþ noktasý
-                printf("/!\\");
+            else if (map[i][j] == 1) //Walkways
+                printf("███");
+            else if (map[i][j] == 2) //Start point
+                printf("▌⌂▐");
+            else if (map[i][j] == 3) //End point
+                printf("▌E▐");
+            else if (map[i][j] == 4) //Walked
+                printf("░░░");
+            else if (map[i][j] == 5) //True Path
+                printf("▓▓▓");
         }
-        printf("|\n");
+        printf("│\n");
     }
-    for (int i=0;i<3*X;i++) {printf("-");}
-    printf("---");
+    printf("└");
+    for (int i=0;i<=3*X+2;i++) {printf("─");}
+    printf("┘");
 }
 
 void generateRandomMap(char map[X][X])
 {
     /**Generates a random map between 0 and 1*/
+<<<<<<< HEAD
     short int chance = 33; // Normalde %50 ihtimalle dizilen sayýlarý yine 2 elemana yakýnsa %50 ihtimalle deðilse daha düþük bir ihtimalle yeniden dizecek yumuþatma algoritmasýnýn þans deðeri.
+=======
+    short int chance = 25; //Chance multiplier for smoothing algorithm
+>>>>>>> b1f902959ca8b55842c172fed6e43ec5f50fd05a
     /* FULL RANDOM */
     for (int i=0;i<X;i++)
     {
@@ -63,6 +75,7 @@ void generateRandomMap(char map[X][X])
         }
     }
     /* SMOOTHING THE FIRST FULL RANDOM */
+    char xmap[X][X] = {0};
     for (int i=0;i<X;i++)
     {
         for (int j=0;j<X;j++)
@@ -70,19 +83,23 @@ void generateRandomMap(char map[X][X])
             if (i-1>=0 && j-1>=0 && i+1<X && j+1<X)
             {
                 char amount_of_adjacent_available_tiles = 0;
-                if(map[i-1][j]) amount_of_adjacent_available_tiles++; //Üstte
-                if(map[i][j-1]) amount_of_adjacent_available_tiles++; //Solda
-                if(map[i][j+1]) amount_of_adjacent_available_tiles++; //Saðda
-                if(map[i+1][j]) amount_of_adjacent_available_tiles++; //Altta
-                char inner_chance = 2-abs(2-amount_of_adjacent_available_tiles); // 2-|2-x| kýrýlmalý lineer fonksiyon grafiði denklemi ile 2'de maksimum hesaplatýyor
+                if(map[i-1][j]) amount_of_adjacent_available_tiles++; //Up
+                if(map[i][j-1]) amount_of_adjacent_available_tiles++; //Left
+                if(map[i][j+1]) amount_of_adjacent_available_tiles++; //Right
+                if(map[i+1][j]) amount_of_adjacent_available_tiles++; //Down
+                char inner_chance = 2-abs(2-amount_of_adjacent_available_tiles); // 2-|2-x|
                 if (chance*inner_chance > (rand()%101))
-                    map[i][j] = 1;
+                    xmap[i][j] = 1;
                 else
-                    map[i][j] = 0;
+                    xmap[i][j] = 0;
             }
         }
     }
-
+    for (int i=1;i<X-1;i++)
+    {
+        for (int j=1;j<X-1;j++)
+            map[i][j] = xmap[i][j];
+    }
 }
 
 int getNumber(int max)
@@ -93,8 +110,6 @@ int getNumber(int max)
     do{
         fgets(integerToReturn,MAX,stdin);
         int toReturn = (int)strtol(integerToReturn,&p,10);
-        if ( integerToReturn[0] == 0 )
-            return 0;
         if ( toReturn >= 0 && toReturn <= max && toReturn != NULL )
             return toReturn;
         printf("ERROR: Wrong input.\nTry again: ");
@@ -131,6 +146,10 @@ int writeMapBySide(int side, int count, char map[X][X], int max, char info, int 
 int main()
 {
     /* INITIALIZATION */
+    system("echo Initializing...");
+    system("color C");
+    system("chcp 65001");
+    system("cls");
     srand(time(NULL));
     char map[X][X] = {0};
     /* TODO: SCANF X MALLOC DIZI */
@@ -162,7 +181,7 @@ int main()
     system("cls");
     drawMap(map);
     /* START ITERATING THROUGH THE MAP */
-    struct move *start;
+    struct move *current;
 
     return 0;
 }
