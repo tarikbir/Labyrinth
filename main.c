@@ -4,7 +4,7 @@
 #include <math.h>
 /* GLOBAL DEFINES */
 #define MAX 40
-#define X 20
+#define X 50
 
 char moves[] = {0 , 1 , 2 , 3};
 /*  0 = Up
@@ -13,8 +13,9 @@ char moves[] = {0 , 1 , 2 , 3};
     3 = Left */
 
 struct move{
-    char nextMove;
-    struct move *prev;
+    char x;
+    char y;
+    char remaining;
     struct move *next;
 };
 
@@ -42,9 +43,9 @@ void drawMap(char map[X][X])
             else if (map[i][j] == 1) //Walkways
                 printf("███");
             else if (map[i][j] == 2) //Start point
-                printf("█◘█");
+                printf("▌⌂▐");
             else if (map[i][j] == 3) //End point
-                printf("█◙█");
+                printf("▌E▐");
             else if (map[i][j] == 4) //Walked
                 printf("░░░");
             else if (map[i][j] == 5) //True Path
@@ -60,7 +61,7 @@ void drawMap(char map[X][X])
 void generateRandomMap(char map[X][X])
 {
     /**Generates a random map between 0 and 1*/
-    short int chance = 33; //Chance multiplier for smoothing algorithm
+    short int chance = 25; //Chance multiplier for smoothing algorithm
     /* FULL RANDOM */
     for (int i=0;i<X;i++)
     {
@@ -70,6 +71,7 @@ void generateRandomMap(char map[X][X])
         }
     }
     /* SMOOTHING THE FIRST FULL RANDOM */
+    char xmap[X][X] = {0};
     for (int i=0;i<X;i++)
     {
         for (int j=0;j<X;j++)
@@ -83,13 +85,17 @@ void generateRandomMap(char map[X][X])
                 if(map[i+1][j]) amount_of_adjacent_available_tiles++; //Down
                 char inner_chance = 2-abs(2-amount_of_adjacent_available_tiles); // 2-|2-x|
                 if (chance*inner_chance > (rand()%101))
-                    map[i][j] = 1;
+                    xmap[i][j] = 1;
                 else
-                    map[i][j] = 0;
+                    xmap[i][j] = 0;
             }
         }
     }
-
+    for (int i=1;i<X-1;i++)
+    {
+        for (int j=1;j<X-1;j++)
+            map[i][j] = xmap[i][j];
+    }
 }
 
 int getNumber(int max)
