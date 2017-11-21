@@ -16,14 +16,23 @@ struct stack
 {
     char move;
     struct stack *next;
-}*top;
+};
 
-void push(int nextmove)
-    {
-        struct stack *ekle=(struct stack*)malloc(sizeof(struct stack));
-        if (ekle == NULL){
-            printf("\nERROR: No memory to add to stack!");
-        }
+struct node
+{
+    struct stack movesToDo;
+    int x;
+    int y;
+    char remainingMove;
+};
+
+void push(struct stack* top, int nextmove)
+{
+    struct stack *ekle=(struct stack*)malloc(sizeof(struct stack));
+    if (ekle == NULL){
+        printf("\nERROR: No more memory to add to the stack!");
+    }
+    else{
         ekle->move=nextmove;
         ekle->next=NULL;
         if(top!=NULL)
@@ -32,21 +41,26 @@ void push(int nextmove)
             top=ekle;
         }
     }
+}
 
-    void pop()
+char pop(struct stack top)
+{
+    if(top->move==NULL)
     {
-        if(top->move==NULL)
-        {
-            printf("\nERROR: Stack is empty!");
-        }
-        else
-        {
-            struct stack *gecici;
-            gecici=top;
-            top=top->next;
-            free(gecici);
-        }
+        printf("\nERROR: Stack is empty!");
+        return -1;
     }
+    else
+    {
+        struct stack *gecici;
+        char returnVal;
+        gecici=top;
+        returnVal = top->move;
+        top=top->next;
+        free(gecici);
+        return returnVal;
+    }
+}
 
 void drawMap(char map[X][X])
 {
@@ -93,7 +107,6 @@ void drawMap(char map[X][X])
 void generateRandomMap(char map[X][X])
 {
     /**Generates a random map between 0 and 1*/
-    short int chance = 25; //Chance multiplier for smoothing algorithm
     /* FULL RANDOM */
     for (int i=0; i<X; i++)
     {
@@ -103,30 +116,31 @@ void generateRandomMap(char map[X][X])
         }
     }
     /* SMOOTHING THE FIRST FULL RANDOM */
-    char xmap[X][X] = {0};
-    for (int i=0; i<X; i++)
+    int doSmoothing = 1;
+    if (doSmoothing)
     {
-        for (int j=0; j<X; j++)
+        short int chance = 33; //Chance multiplier for smoothing algorithm
+        char xmap[X][X] = {0};
+        for (int i=0; i<X; i++)
         {
-            if (i-1>=0 && j-1>=0 && i+1<X && j+1<X)
+            for (int j=0; j<X; j++)
             {
-                char amount_of_adjacent_available_tiles = 0;
-                if(map[i-1][j]) amount_of_adjacent_available_tiles++; //Up
-                if(map[i][j-1]) amount_of_adjacent_available_tiles++; //Left
-                if(map[i][j+1]) amount_of_adjacent_available_tiles++; //Right
-                if(map[i+1][j]) amount_of_adjacent_available_tiles++; //Down
-                char inner_chance = 2-abs(2-amount_of_adjacent_available_tiles); // 2-|2-x|
-                if (chance*inner_chance > (rand()%101))
-                    xmap[i][j] = 1;
-                else
-                    xmap[i][j] = 0;
+                if (i-1>=0 && j-1>=0 && i+1<X && j+1<X)
+                {
+                    char amount_of_adjacent_available_tiles = checkAround(map,i,j,1);
+                    char inner_chance = 2-abs(2-amount_of_adjacent_available_tiles); // 2-|2-x|
+                    if (chance*inner_chance > (rand()%101))
+                        xmap[i][j] = 1;
+                    else
+                        xmap[i][j] = 0;
+                }
             }
         }
-    }
-    for (int i=1; i<X-1; i++)
-    {
-        for (int j=1; j<X-1; j++)
-            map[i][j] = xmap[i][j];
+        for (int i=1; i<X-1; i++)
+        {
+            for (int j=1; j<X-1; j++)
+                map[i][j] = xmap[i][j];
+        }
     }
 }
 
@@ -173,10 +187,27 @@ int writeMapBySide(int side, int count, char map[X][X], int max, char info, int 
     return 1;
 }
 
+int getPoint(char map[X][X], int x, int y)
+{
+    if (x>X || x<0 || y>X || y<0)
+        return 0; //If edges, return 0
+    return map[x][y];
+}
+
+int checkAround(char map[X][X], int x, int y, int valueToCheck)
+{
+    int sum = 0;
+    if (getPoint(map, x-1, y)==valueToCheck) sum++;
+    if (getPoint(map, x, y-1)==valueToCheck) sum++;
+    if (getPoint(map, x, y+1)==valueToCheck) sum++;
+    if (getPoint(map, x+1, y)==valueToCheck) sum++;
+    return sum;
+}
+
 int main()
 {
     /* INITIALIZATION */
-    system("echo Initializing...");
+    system("echo Initializing...\nIf you see this, your computer is slow.");
     system("color C");
     system("chcp 65001");
     system("cls");
