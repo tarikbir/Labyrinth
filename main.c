@@ -6,65 +6,66 @@
 #define MAX 40
 #define X 50
 
-char moves[] = {0 , 1 , 2 , 3};
+char moves[] = {0, 1, 2, 3};
 /*  0 = Up
     1 = Right
     2 = Down
     3 = Left */
 
-struct move{
-    char x;
-    char y;
-    char remaining;
-    struct move *next;
-};
-
-struct stack{
-    //struct move val;
-    int deger;
-    //struct stack *prev;
+struct stack
+{
+    char move;
     struct stack *next;
-};
-struct stack *top=NULL;
+}*top;
 
-void push(int data)
-{
-    struct stack *ekle=(struct stack*)malloc(sizeof(struct stack));
-    ekle->deger=data;
-    ekle->next=NULL;
-    if(top!=NULL)
+void push(int nextmove)
     {
-        ekle->next=top;
-        top=ekle;
+        struct stack *ekle=(struct stack*)malloc(sizeof(struct stack));
+        if (ekle == NULL){
+            printf("\nERROR: No memory to add to stack!");
+        }
+        ekle->move=nextmove;
+        ekle->next=NULL;
+        if(top!=NULL)
+        {
+            ekle->next=top;
+            top=ekle;
+        }
     }
-}
-void pop()
-{
-    if(top->deger==NULL)
+
+    void pop()
     {
-        printf("Stack bos");
+        if(top->move==NULL)
+        {
+            printf("\nERROR: Stack is empty!");
+        }
+        else
+        {
+            struct stack *gecici;
+            gecici=top;
+            top=top->next;
+            free(gecici);
+        }
     }
-    else
-    {
-        struct stack *gecici;
-        gecici=top;
-        top=top->next;
-        free(gecici);
-    }
-}
 
 void drawMap(char map[X][X])
 {
     /**Draws the map onto the cmd screen*/
     printf("╔");
-    for (int i=0;i<=3*X+2;i++) {printf("═");}
+    for (int i=0; i<=3*X+2; i++)
+    {
+        printf("═");
+    }
     printf("╗\n║");
-    for (int i=0;i<=X;i++) {printf("%02d ",i);}
+    for (int i=0; i<=X; i++)
+    {
+        printf("%02d ",i);
+    }
     printf("║\n");
-    for (int i=0;i<X;i++)
+    for (int i=0; i<X; i++)
     {
         printf("║%02d ",i+1);
-        for (int j=0;j<X;j++)
+        for (int j=0; j<X; j++)
         {
             if (map[i][j] == 0) //Walls
                 printf("   ");
@@ -82,31 +83,30 @@ void drawMap(char map[X][X])
         printf("║\n");
     }
     printf("╚");
-    for (int i=0;i<=3*X+2;i++) {printf("═");}
+    for (int i=0; i<=3*X+2; i++)
+    {
+        printf("═");
+    }
     printf("╝");
 }
 
 void generateRandomMap(char map[X][X])
 {
     /**Generates a random map between 0 and 1*/
-
-    short int chance = 33; // Normalde %50 ihtimalle dizilen sayýlarý yine 2 elemana yakýnsa %50 ihtimalle deðilse daha düþük bir ihtimalle yeniden dizecek yumuþatma algoritmasýnýn þans deðeri.
-
-    //short int chance = 25; //Chance multiplier for smoothing algorithm
-
+    short int chance = 25; //Chance multiplier for smoothing algorithm
     /* FULL RANDOM */
-    for (int i=0;i<X;i++)
+    for (int i=0; i<X; i++)
     {
-        for (int j=0;j<X;j++)
+        for (int j=0; j<X; j++)
         {
             map[i][j] = rand()%2;
         }
     }
     /* SMOOTHING THE FIRST FULL RANDOM */
     char xmap[X][X] = {0};
-    for (int i=0;i<X;i++)
+    for (int i=0; i<X; i++)
     {
-        for (int j=0;j<X;j++)
+        for (int j=0; j<X; j++)
         {
             if (i-1>=0 && j-1>=0 && i+1<X && j+1<X)
             {
@@ -123,9 +123,9 @@ void generateRandomMap(char map[X][X])
             }
         }
     }
-    for (int i=1;i<X-1;i++)
+    for (int i=1; i<X-1; i++)
     {
-        for (int j=1;j<X-1;j++)
+        for (int j=1; j<X-1; j++)
             map[i][j] = xmap[i][j];
     }
 }
@@ -135,13 +135,15 @@ int getNumber(int max)
     /**Gets an integer from stdin within 0 and max.*/
     char integerToReturn[MAX];
     char *p;
-    do{
+    do
+    {
         fgets(integerToReturn,MAX,stdin);
         int toReturn = (int)strtol(integerToReturn,&p,10);
         if ( toReturn >= 0 && toReturn <= max && toReturn != NULL )
             return toReturn;
-        printf("ERROR: Wrong input.\nTry again: ");
-    }while(1);
+        printf("\nERROR: Wrong input.\nTry again: ");
+    }
+    while(1);
 }
 
 int writeMapBySide(int side, int count, char map[X][X], int max, char info, int doCheck, int check)
@@ -185,7 +187,8 @@ int main()
     drawMap(map);
     /* GET ENTRANCE AND EXIT */
     //ENTRANCE
-    do{
+    do
+    {
         printf("\nPick the entrance:\n1 = Up\t2 = Right\t3 = Down\t4 = Left\nSide: ");
         int side = getNumber(4);
         printf("Point on side?: ");
@@ -193,11 +196,13 @@ int main()
         int check = writeMapBySide(side, point, map, X, 2, 1, 1);
         if (check) break;
         printf("\nERROR: Wrong input! That point is not a valid target for an entrance!");
-    }while(1);
+    }
+    while(1);
     system("cls");
     drawMap(map);
     //EXIT
-    do{
+    do
+    {
         printf("\nPick the exit:\n1 = Up\t2 = Right\t3 = Down\t4 = Left\nSide: ");
         int side = getNumber(4);
         printf("Point on side?: ");
@@ -205,7 +210,8 @@ int main()
         int check = writeMapBySide(side, point, map, X, 3, 1, 1);
         if (check) break;
         printf("\nERROR: Wrong input! That point is not a valid target for an exit!");
-    }while(1);
+    }
+    while(1);
     system("cls");
     drawMap(map);
     /* START ITERATING THROUGH THE MAP */
