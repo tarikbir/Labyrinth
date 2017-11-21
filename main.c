@@ -61,7 +61,11 @@ void drawMap(char map[X][X])
 void generateRandomMap(char map[X][X])
 {
     /**Generates a random map between 0 and 1*/
+<<<<<<< HEAD
+    short int chance = 33; // Normalde %50 ihtimalle dizilen sayýlarý yine 2 elemana yakýnsa %50 ihtimalle deðilse daha düþük bir ihtimalle yeniden dizecek yumuþatma algoritmasýnýn þans deðeri.
+=======
     short int chance = 25; //Chance multiplier for smoothing algorithm
+>>>>>>> b1f902959ca8b55842c172fed6e43ec5f50fd05a
     /* FULL RANDOM */
     for (int i=0;i<X;i++)
     {
