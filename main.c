@@ -20,10 +20,38 @@ struct move{
 };
 
 struct stack{
-    struct move val;
-    struct stack *prev;
+    //struct move val;
+    int deger;
+    //struct stack *prev;
     struct stack *next;
 };
+struct stack *top=NULL;
+
+void push(int data)
+{
+    struct stack *ekle=(struct stack*)malloc(sizeof(struct stack));
+    ekle->deger=data;
+    ekle->next=NULL;
+    if(top!=NULL)
+    {
+        ekle->next=top;
+        top=ekle;
+    }
+}
+void pop()
+{
+    if(top->deger==NULL)
+    {
+        printf("Stack bos");
+    }
+    else
+    {
+        struct stack *gecici;
+        gecici=top;
+        top=top->next;
+        free(gecici);
+    }
+}
 
 void drawMap(char map[X][X])
 {
@@ -61,11 +89,11 @@ void drawMap(char map[X][X])
 void generateRandomMap(char map[X][X])
 {
     /**Generates a random map between 0 and 1*/
-<<<<<<< HEAD
+
     short int chance = 33; // Normalde %50 ihtimalle dizilen sayýlarý yine 2 elemana yakýnsa %50 ihtimalle deðilse daha düþük bir ihtimalle yeniden dizecek yumuþatma algoritmasýnýn þans deðeri.
-=======
-    short int chance = 25; //Chance multiplier for smoothing algorithm
->>>>>>> b1f902959ca8b55842c172fed6e43ec5f50fd05a
+
+    //short int chance = 25; //Chance multiplier for smoothing algorithm
+
     /* FULL RANDOM */
     for (int i=0;i<X;i++)
     {
