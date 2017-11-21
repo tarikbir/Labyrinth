@@ -56,14 +56,14 @@ void pop()
 void drawMap(char map[X][X])
 {
     /**Draws the map onto the cmd screen*/
-    printf("┌");
-    for (int i=0;i<=3*X+2;i++) {printf("─");}
-    printf("┐\n│");
+    printf("╔");
+    for (int i=0;i<=3*X+2;i++) {printf("═");}
+    printf("╗\n║");
     for (int i=0;i<=X;i++) {printf("%02d ",i);}
-    printf("│\n");
+    printf("║\n");
     for (int i=0;i<X;i++)
     {
-        printf("│%02d ",i+1);
+        printf("║%02d ",i+1);
         for (int j=0;j<X;j++)
         {
             if (map[i][j] == 0) //Walls
@@ -79,11 +79,11 @@ void drawMap(char map[X][X])
             else if (map[i][j] == 5) //True Path
                 printf("▓▓▓");
         }
-        printf("│\n");
+        printf("║\n");
     }
-    printf("└");
-    for (int i=0;i<=3*X+2;i++) {printf("─");}
-    printf("┘");
+    printf("╚");
+    for (int i=0;i<=3*X+2;i++) {printf("═");}
+    printf("╝");
 }
 
 void generateRandomMap(char map[X][X])
