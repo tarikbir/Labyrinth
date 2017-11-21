@@ -43,7 +43,7 @@ void push(struct stack* top, int nextmove)
     }
 }
 
-char pop(struct stack top)
+char pop(struct stack* top)
 {
     if(top->move==NULL)
     {
