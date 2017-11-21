@@ -6,8 +6,8 @@
 #define MAX 40
 #define X 50
 
-char moves[] = {0, 1, 2, 3};
-/*  0 = Up
+/*  MOVES:
+    0 = Up
     1 = Right
     2 = Down
     3 = Left */
@@ -20,7 +20,7 @@ struct stack
 
 struct node
 {
-    struct stack movesToDo;
+    struct stack* movesToDo;
     int x;
     int y;
     char remainingMove;
@@ -62,6 +62,80 @@ char pop(struct stack* top)
     }
 }
 
+struct node* newNode(int x, int y)
+{
+    struct node* ekle = (struct node*)malloc(sizeof(struct node));
+    if (ekle == NULL){
+        printf("\nERROR: No more memory to create new node!");
+    }
+    else{
+        ekle->x = x;
+        ekle->y = y;
+        ekle->remainingMove = 0;
+        struct stack *ekle=(struct stack*)malloc(sizeof(struct stack));
+    }
+    return ekle;
+}
+
+void go(char map[X][X], int x, int y, struct node currentNode)
+{
+    int around = checkAround(map, x, y, 1);
+    if (around == 0)
+    {
+        //En son kalınan node'a dön
+    }
+    else if (around == 1)
+    {
+        map[x][y] = 4;
+        //Node oluşturmadan hareket et
+    }
+    else
+    {
+        //Yeni node oluştur ve onu gez.
+    }
+}
+
+int findPath(char map[X][X], int x, int y)
+{
+    if (x>X || x<0 || y>X || y<0)
+        return 0;
+    if (map[x][y] == 3)
+    {
+        return 1;
+    }
+    else if (map[x][y] == 1)
+        map[x][y] = 4;
+    if (map[x-1][y]%2 == 1){
+        if (findPath(map,x-1,y))
+        {
+            map[x][y] = 5;
+            return 1;
+        }
+    }
+    if (map[x][y-1]%2 == 1){
+        if (findPath(map,x,y-1))
+        {
+            map[x][y] = 5;
+            return 1;
+        }
+    }
+    if (map[x][y+1]%2 == 1){
+        if (findPath(map,x,y+1))
+        {
+            map[x][y] = 5;
+            return 1;
+        }
+    }
+    if (map[x+1][y]%2 == 1){
+        if (findPath(map,x+1,y))
+        {
+            map[x][y] = 5;
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void drawMap(char map[X][X])
 {
     /**Draws the map onto the cmd screen*/
@@ -82,15 +156,15 @@ void drawMap(char map[X][X])
         for (int j=0; j<X; j++)
         {
             if (map[i][j] == 0) //Walls
-                printf("   ");
-            else if (map[i][j] == 1) //Walkways
                 printf("███");
-            else if (map[i][j] == 2) //Start point
-                printf("▌⌂▐");
-            else if (map[i][j] == 3) //End point
-                printf("▌E▐");
-            else if (map[i][j] == 4) //Walked
+            else if (map[i][j] == 1) //Walkways
                 printf("░░░");
+            else if (map[i][j] == 2) //Start point
+                printf("░⌂░");
+            else if (map[i][j] == 3) //End point
+                printf("░E░");
+            else if (map[i][j] == 4) //Walked
+                printf("░.░");
             else if (map[i][j] == 5) //True Path
                 printf("▓▓▓");
         }
@@ -116,30 +190,32 @@ void generateRandomMap(char map[X][X])
         }
     }
     /* SMOOTHING THE FIRST FULL RANDOM */
-    int doSmoothing = 1;
+    int doSmoothing = 1, smoothingFactor = 10;
     if (doSmoothing)
     {
         short int chance = 33; //Chance multiplier for smoothing algorithm
-        char xmap[X][X] = {0};
-        for (int i=0; i<X; i++)
-        {
-            for (int j=0; j<X; j++)
+        for (int k=1; k<=smoothingFactor; k++){
+            char xmap[X][X] = {0};
+            for (int i=0; i<X; i++)
             {
-                if (i-1>=0 && j-1>=0 && i+1<X && j+1<X)
+                for (int j=0; j<X; j++)
                 {
-                    char amount_of_adjacent_available_tiles = checkAround(map,i,j,1);
-                    char inner_chance = 2-abs(2-amount_of_adjacent_available_tiles); // 2-|2-x|
-                    if (chance*inner_chance > (rand()%101))
-                        xmap[i][j] = 1;
-                    else
-                        xmap[i][j] = 0;
+                    if (i-1>=0 && j-1>=0 && i+1<X && j+1<X)
+                    {
+                        char amount_of_adjacent_available_tiles = checkAround(map,i,j,1);
+                        char inner_chance = amount_of_adjacent_available_tiles%4; // Removes chunky intersections and randomizes again.
+                        if (chance*inner_chance > (rand()%101))
+                            xmap[i][j] = 1;
+                        else
+                            xmap[i][j] = 0;
+                    }
                 }
             }
-        }
-        for (int i=1; i<X-1; i++)
-        {
-            for (int j=1; j<X-1; j++)
-                map[i][j] = xmap[i][j];
+            for (int i=1; i<X-1; i++)
+            {
+                for (int j=1; j<X-1; j++)
+                    map[i][j] = xmap[i][j];
+            }
         }
     }
 }
@@ -204,11 +280,26 @@ int checkAround(char map[X][X], int x, int y, int valueToCheck)
     return sum;
 }
 
+void findPoint(int *p, char map[X][X], int search)
+{
+    for (int i=0; i<X; i++)
+    {
+        for (int j=0; j<X; j++)
+        {
+            if (map[i][j] == search)
+                {
+                    *p = i;
+                    *(p+1) = j;
+                }
+        }
+    }
+}
+
 int main()
 {
     /* INITIALIZATION */
     system("echo Initializing...\nIf you see this, your computer is slow.");
-    system("color C");
+    system("color 7");
     system("chcp 65001");
     system("cls");
     srand(time(NULL));
@@ -246,7 +337,18 @@ int main()
     system("cls");
     drawMap(map);
     /* START ITERATING THROUGH THE MAP */
-    struct move *current;
-
+    int getPoint[2], isExitFound=0;
+    findPoint(getPoint,map,2);
+    system("cls");
+    if (findPath(map, getPoint[0], getPoint[1]))
+    {
+        isExitFound = 1;
+    }
+    printf("\n");
+    drawMap(map);
+    if (isExitFound)
+        printf("\nExit have found!!!");
+    else
+        printf("\nExit cannot be found!!!");
     return 0;
 }
