@@ -347,7 +347,7 @@ int main()
     printf("\n");
     drawMap(map);
     if (isExitFound)
-        printf("\nExit have found!!!");
+        printf("\nExit has been found!!!");
     else
         printf("\nExit cannot be found!!!");
     return 0;
