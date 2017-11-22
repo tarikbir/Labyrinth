@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include "graphics.h"
 /* GLOBAL DEFINES */
 #define MAX 40
 #define X 50
@@ -12,121 +13,37 @@
     2 = Down
     3 = Left */
 
-struct stack
-{
-    char move;
-    struct stack *next;
-};
-
-struct node
-{
-    struct stack* movesToDo;
-    int x;
-    int y;
-    char remainingMove;
-};
-
-void push(struct stack* top, int nextmove)
-{
-    struct stack *ekle=(struct stack*)malloc(sizeof(struct stack));
-    if (ekle == NULL){
-        printf("\nERROR: No more memory to add to the stack!");
-    }
-    else{
-        ekle->move=nextmove;
-        ekle->next=NULL;
-        if(top!=NULL)
-        {
-            ekle->next=top;
-            top=ekle;
-        }
-    }
-}
-
-char pop(struct stack* top)
-{
-    if(top->move==NULL)
-    {
-        printf("\nERROR: Stack is empty!");
-        return -1;
-    }
-    else
-    {
-        struct stack *gecici;
-        char returnVal;
-        gecici=top;
-        returnVal = top->move;
-        top=top->next;
-        free(gecici);
-        return returnVal;
-    }
-}
-
-struct node* newNode(int x, int y)
-{
-    struct node* ekle = (struct node*)malloc(sizeof(struct node));
-    if (ekle == NULL){
-        printf("\nERROR: No more memory to create new node!");
-    }
-    else{
-        ekle->x = x;
-        ekle->y = y;
-        ekle->remainingMove = 0;
-        struct stack *ekle=(struct stack*)malloc(sizeof(struct stack));
-    }
-    return ekle;
-}
-
-void go(char map[X][X], int x, int y, struct node currentNode)
-{
-    int around = checkAround(map, x, y, 1);
-    if (around == 0)
-    {
-        //En son kalınan node'a dön
-    }
-    else if (around == 1)
-    {
-        map[x][y] = 4;
-        //Node oluşturmadan hareket et
-    }
-    else
-    {
-        //Yeni node oluştur ve onu gez.
-    }
-}
-
 int findPath(char map[X][X], int x, int y)
 {
     if (x>X || x<0 || y>X || y<0)
         return 0;
     if (map[x][y] == 3)
-    {
         return 1;
-    }
     else if (map[x][y] == 1)
         map[x][y] = 4;
-    if (map[x-1][y]%2 == 1){
+
+    if (map[x-1][y] == 1 || map[x-1][y] == 3){ //Ust
         if (findPath(map,x-1,y))
         {
             map[x][y] = 5;
             return 1;
         }
     }
-    if (map[x][y-1]%2 == 1){
+    if (map[x][y-1] == 1 || map[x][y-1] == 3){ //Sag
         if (findPath(map,x,y-1))
         {
             map[x][y] = 5;
             return 1;
         }
     }
-    if (map[x][y+1]%2 == 1){
+    if (map[x][y+1] == 1 || map[x][y+1] == 3){ //Alt
         if (findPath(map,x,y+1))
         {
             map[x][y] = 5;
             return 1;
         }
     }
-    if (map[x+1][y]%2 == 1){
+    if (map[x+1][y] == 1 || map[x+1][y] == 3){ //Sol
         if (findPath(map,x+1,y))
         {
             map[x][y] = 5;
