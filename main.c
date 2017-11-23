@@ -2,54 +2,109 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#include "graphics.h"
 /* GLOBAL DEFINES */
 #define MAX 40
-#define X 50
+#define X 30
 
-/*  MOVES:
+/*  Direction
     0 = Up
     1 = Right
     2 = Down
     3 = Left */
 
-int findPath(char map[X][X], int x, int y)
+struct node
 {
-    if (x>X || x<0 || y>X || y<0)
-        return 0;
-    if (map[x][y] == 3)
-        return 1;
-    else if (map[x][y] == 1)
-        map[x][y] = 4;
+    char data;
+    struct node* up;
+    struct node* right;
+    struct node* down;
+    struct node* left;
+};
 
-    if (map[x-1][y] == 1 || map[x-1][y] == 3){ //Ust
-        if (findPath(map,x-1,y))
+struct node* newNode(char data)
+{
+    struct node* new = (struct node*)malloc(sizeof(struct node));
+    new->data = data;
+    new->up = NULL;
+    new->right = NULL;
+    new->down = NULL;
+    new->left = NULL;
+    return new;
+};
+
+void convert(char map[X][X], struct node* p[X][X])
+{
+    for (int i=0; i<X; i++)
+    {
+        for (int j=0; j<X; j++)
         {
-            map[x][y] = 5;
+            p[i][j] = newNode(map[i][j]);
+        }
+    }
+    for (int i=0; i<X; i++)
+    {
+        for (int j=0; j<X; j++)
+        {
+            if ( i>0 )
+            {
+                p[i][j]->up = p[i-1][j];
+                p[i-1][j]->down = p[i][j];
+            }
+            if ( j<X-1 )
+            {
+                p[i][j]->right = p[i][j+1];
+                p[i][j+1]->left = p[i][j];
+            }
+            if ( i<X-1 )
+            {
+                p[i][j]->down = p[i+1][j];
+                p[i+1][j]->up = p[i][j];
+            }
+            if ( j>0 )
+            {
+                p[i][j]->left = p[i][j-1];
+                p[i][j-1]->right = p[i][j];
+            }
+        }
+    }
+}
+
+int findPath(struct node* p)
+{
+    struct node* w = p;
+    if (w->data == 3)
+        return 1;
+    else if (w->data == 1)
+        p->data = 4;
+    if (w->up != NULL && (w->up->data == 1 || w->up->data == 3)){ //Ust
+        if (findPath(w->up))
+        {
+            if (p->data != 2) p->data = 5;
             return 1;
         }
     }
-    if (map[x][y-1] == 1 || map[x][y-1] == 3){ //Sag
-        if (findPath(map,x,y-1))
+    if (w->right != NULL && (w->right->data == 1 || w->right->data == 3)){ //Sag
+        if (findPath(w->right))
         {
-            map[x][y] = 5;
+            if (p->data != 2) p->data = 5;
             return 1;
         }
     }
-    if (map[x][y+1] == 1 || map[x][y+1] == 3){ //Alt
-        if (findPath(map,x,y+1))
+    if (w->down != NULL && (w->down->data == 1 || w->down->data == 3)){ //Alt
+        if (findPath(w->down))
         {
-            map[x][y] = 5;
+            if (p->data != 2) p->data = 5;
             return 1;
         }
     }
-    if (map[x+1][y] == 1 || map[x+1][y] == 3){ //Sol
-        if (findPath(map,x+1,y))
+    if (w->left != NULL && (w->left->data == 1 || w->left->data == 3)){ //Sol
+        if (findPath(w->left))
         {
-            map[x][y] = 5;
+            if (p->data != 2) p->data = 5;
             return 1;
         }
     }
+    free(w);
     return 0;
 }
 
@@ -80,13 +135,59 @@ void drawMap(char map[X][X])
                 printf("░⌂░");
             else if (map[i][j] == 3) //End point
                 printf("░E░");
-            else if (map[i][j] == 4) //Walked
-                printf("░.░");
-            else if (map[i][j] == 5) //True Path
-                printf("▓▓▓");
         }
         printf("║\n");
     }
+    printf("╚");
+    for (int i=0; i<=3*X+2; i++)
+    {
+        printf("═");
+    }
+    printf("╝");
+}
+
+void drawPointerMap(struct node** p)
+{
+    /**Draws the pointerMap onto the cmd screen*/
+    struct node* w = *p;
+    struct node* w_line = *p;
+    int line = 0;
+    printf("╔");
+    for (int i=0; i<=3*X+2; i++)
+    {
+        printf("═");
+    }
+    printf("╗\n║");
+    for (int i=0; i<=X; i++)
+    {
+        printf("%02d ",i);
+    }
+    printf("║\n");
+    do
+    {
+        w_line = w;
+        printf("║%02d ",++line);
+        do
+        {
+            if (w_line->data == 0) //Walls
+                printf("███");
+            else if (w_line->data == 1) //Walkways
+                printf("░░░");
+            else if (w_line->data == 2) //Start point
+                printf("▓⌂▓");
+            else if (w_line->data == 3) //End point
+                printf("▓E▓");
+            else if (w_line->data == 4) //Walked
+                printf("░▓░");
+            else if (w_line->data == 5) //True Path
+                printf("▓▓▓");
+            else
+                printf("░░░"); //Hard-coded cheat
+            w_line = w_line->right;
+        }while (w_line != NULL);
+        printf("║\n");
+        w = w->down;
+    }while (w != NULL);
     printf("╚");
     for (int i=0; i<=3*X+2; i++)
     {
@@ -212,6 +313,19 @@ void findPoint(int *p, char map[X][X], int search)
     }
 }
 
+struct node* navigateTo(struct node* p, int x, int y)
+{
+    for (int i=0; i<x; i++)
+    {
+        p=p->down;
+    }
+    for (int i=0; i<y; i++)
+    {
+        p=p->right;
+    }
+    return p;
+}
+
 int main()
 {
     /* INITIALIZATION */
@@ -221,6 +335,7 @@ int main()
     system("cls");
     srand(time(NULL));
     char map[X][X] = {0};
+    struct node* pointerMap[X][X];
     /* TODO: SCANF X MALLOC DIZI */
     generateRandomMap(map);
     drawMap(map);
@@ -256,13 +371,16 @@ int main()
     /* START ITERATING THROUGH THE MAP */
     int getPoint[2], isExitFound=0;
     findPoint(getPoint,map,2);
+    convert(map,pointerMap); //Map conversion to start pointer.
+    struct node* start = pointerMap[0][0];
+    start = navigateTo(start, getPoint[0], getPoint[1]);
     system("cls");
-    if (findPath(map, getPoint[0], getPoint[1]))
+    if (findPath(start))
     {
         isExitFound = 1;
     }
     printf("\n");
-    drawMap(map);
+    drawPointerMap(&pointerMap);
     if (isExitFound)
         printf("\nExit has been found!!!");
     else
