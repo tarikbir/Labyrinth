@@ -60,22 +60,22 @@ void convert(char map[X][X], struct node* p[X][X], int n)
     {
         for (int j=0; j<n; j++)
         {
-            if ( i>0 )      //Connects above node with itself
+            if ( i>0 && p[i][j]->up == NULL )      //Connects above node with itself
             {
                 p[i][j]->up = p[i-1][j];
                 p[i-1][j]->down = p[i][j];
             }
-            if ( j<n-1 )    //Connects node on the right with itself
+            if ( j<n-1 && p[i][j]->right == NULL )    //Connects node on the right with itself
             {
                 p[i][j]->right = p[i][j+1];
                 p[i][j+1]->left = p[i][j];
             }
-            if ( i<n-1 )    //Connects below node with itself
+            if ( i<n-1 && p[i][j]->down == NULL )    //Connects below node with itself
             {
                 p[i][j]->down = p[i+1][j];
                 p[i+1][j]->up = p[i][j];
             }
-            if ( j>0 )      //Connects node on the left with itself
+            if ( j>0 && p[i][j]->left == NULL )      //Connects node on the left with itself
             {
                 p[i][j]->left = p[i][j-1];
                 p[i][j-1]->right = p[i][j];
