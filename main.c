@@ -4,8 +4,8 @@
 #include <math.h>
 #include <windows.h>
 /* GLOBAL DEFINES */
-#define MAX 40
-#define X 120
+#define MAX 40 //Max character lenght
+#define X 98 //Max screen lenght
 HANDLE hConsole;
 char defaultColor = 15;
 
