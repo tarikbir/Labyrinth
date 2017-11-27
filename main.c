@@ -457,7 +457,6 @@ int main()
     drawPointerMap(&pointerMap,n);                          //Another draw function to input a pointer map and draw on the cmd window.
     if (isExitFound)
         printf("\nExit has been found!!!");
-
     else
         printf("\nExit cannot be found!!!");
     return 0;
