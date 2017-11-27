@@ -3,7 +3,6 @@
 #include <time.h>
 #include <math.h>
 #include <windows.h>
-#include <conio.h>
 /* GLOBAL DEFINES */
 #define MAX 40 //Max character lenght
 #define X 98 //Max screen lenght
@@ -412,7 +411,6 @@ int main()
     struct node* pointerMap[X][X] = {NULL};
     clearScreen();
     /* GET SIZE OF THE MAP */
-    system("COLOR F");
     printf("Please, enter the dimension you would like to generate the map for: ");
     int n = getNumber(X);                                                                           //getNumber handles integer inputs, so initializing an integer while calling it, sets the value immediately.
     generateRandomMap(map,n,1,10);                                                                  //Function to generate and smooth the randomized map.
