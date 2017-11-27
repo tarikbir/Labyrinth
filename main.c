@@ -6,6 +6,7 @@
 /* GLOBAL DEFINES */
 #define MAX 40 //Max character lenght
 #define X 98 //Max screen lenght
+//160202103 Tarik Bir --- 150202040 Yasin Emir Kutlu
 HANDLE hConsole;
 char defaultColor = 15;
 
