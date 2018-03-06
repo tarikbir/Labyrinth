@@ -1,2 +1,2 @@
 # Labyrinth
-Pathfinding algorithm without any concerns about quickness.
+A pathfinding algorithm that's worse than a blind mouse.
